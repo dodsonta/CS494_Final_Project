@@ -57,8 +57,12 @@ class Server:
         self.online = False
         time.sleep(5)
         for user in self.clients:
-            self.clients[user].sendall("Server is shutting down".encode('utf-8'))
-            self.clients[user].close()
+            try:
+                self.clients[user].sendall("SHUTDOWN".encode('utf-8'))
+                time.sleep(1)
+                self.clients[user].close()
+            except Exception as e:
+                print(f"Error shutting down {user}: {e}")
         if self.serverSocket:
             self.serverSocket.close()
         sys.exit(0)
