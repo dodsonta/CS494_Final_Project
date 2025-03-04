@@ -1,8 +1,9 @@
 import socket
 import sys
 import threading
+import time
 
-DEBUG = True
+DEBUG = False
 
 class client:
     def __init__(self, username):
@@ -20,13 +21,13 @@ class client:
             message = input("Enter message: ")
             if self.online == False:
                 break
-            if(message.lower() == "exit" or message.lower() == "quit"):
+            if(message == "EXIT"):
                 self.online = False
                 print("Exiting client")
                 self.clientSocket.sendall(message.encode('utf-8'))
-                
                 break
             self.clientSocket.sendall(message.encode('utf-8'))
+            time.sleep(1)
         self.clientSocket.close()
 
     def receiveMessage(self):
@@ -40,7 +41,8 @@ class client:
                         self.online = False
                         self.clientSocket.close()
                         sys.exit(0)
-                    print(f"Received: {msg}")
+                    else:
+                        print(f"\nReceived: {msg} \n")
             except ConnectionResetError:
                 break
             except OSError:
@@ -59,7 +61,7 @@ if __name__ == "__main__":
     client = client(username)
     client.connectToServer()
 
-    print(f"Connected to server with username: {username}")
+    print(f"Connected to server with username: {username}\n Type HELP for a list of commands")
     sendThread = threading.Thread(target=client.sendMessage)
     receiveThread = threading.Thread(target=client.receiveMessage)
 
