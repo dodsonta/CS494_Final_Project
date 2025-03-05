@@ -48,23 +48,23 @@ CREATE ROOM <room name>: Creates a room of the name inputted into room name \n \
 JOIN ROOM <room name>: Joins a room of the name inputted into room name \n \
 LEAVE ROOM <room name>: Leaves a room of the name inputted into room name \n \
 LIST USERS <room name>: Lists users in a room of the name inputted into room name \n \
-[<room name>, ..] <message>: Sends a message to all users in the room of the name inputted into room name(s), can send to multiple rooms with commas seperating them. Note must keep brackets \n \
+[<room name>, ..] <message>: Sends a message to all users in the room of the name inputted into room name(s), can send to multiple rooms with commas seperating them. Note must keep [] \n \
                                                    ".encode('utf-8'))
                 elif message == "SEARCH ROOMS":
                     self.clients[username].sendall(f"Rooms: {self.rooms}".encode('utf-8'))
                 elif message.startswith("CREATE ROOM "):
                     roomName = " ".join(message.split(" ")[2:])
                     self.rooms[roomName] = []
-                    self.clients[username].sendall(f"Room {roomName} created".encode('utf-8'))
+                    self.clients[username].sendall(f'Room "{roomName}" created'.encode('utf-8'))
                 elif message.startswith("JOIN ROOM "):
-                    roomName = message.split(" ")[2]
+                    roomName = " ".join(message.split(" ")[2:])
                     if roomName in self.rooms:
                         self.rooms[roomName].append(username)
-                        self.clients[username].sendall(f"Joined room {roomName}".encode('utf-8'))
+                        self.clients[username].sendall(f'Joined room "{roomName}"'.encode('utf-8'))
                     else:
                         self.clients[username].sendall(f"Room {roomName} does not exist".encode('utf-8'))
                 elif message.startswith("LEAVE ROOM "):
-                    roomName = message.split(" ")[2]
+                    roomName = " ".join(message.split(" ")[2:])
                     if (roomName in self.rooms) and (username in self.rooms[roomName]):
                         self.rooms[roomName].remove(username)
                         self.clients[username].sendall(f"Left room {roomName}".encode('utf-8'))
@@ -75,7 +75,7 @@ LIST USERS <room name>: Lists users in a room of the name inputted into room nam
                     else:
                         self.clients[username].sendall(f"Room {roomName} does not exist".encode('utf-8'))
                 elif message.startswith("LIST USERS "):
-                    roomName = message.split(" ")[2]
+                    roomName = " ".join(message.split(" ")[2:])
                     if roomName in self.rooms:
                         self.clients[username].sendall(f"Users in room {roomName}: {self.rooms[roomName]}".encode('utf-8'))
                     else:
@@ -99,6 +99,11 @@ LIST USERS <room name>: Lists users in a room of the name inputted into room nam
             except ConnectionResetError:
                 break
         if self.online:
+            for room in list(self.rooms.keys()):
+                if username in self.rooms[room]:
+                    self.rooms[room].remove(username)
+                    for user in self.rooms[room]:
+                        self.clients[user].sendall(f"{username} left room {room}".encode('utf-8'))
             clientSocket.close()
             del self.clients[username]
             print(f"{username}  disconnected")

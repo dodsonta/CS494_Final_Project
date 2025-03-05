@@ -18,7 +18,7 @@ class client:
     
     def sendMessage(self):
         while self.online == True:
-            message = input("Enter message: ")
+            message = input("Enter command: ")
             if self.online == False:
                 break
             if(message == "EXIT"):
@@ -27,7 +27,7 @@ class client:
                 self.clientSocket.sendall(message.encode('utf-8'))
                 break
             self.clientSocket.sendall(message.encode('utf-8'))
-            time.sleep(1)
+            time.sleep(0.5)
         self.clientSocket.close()
 
     def receiveMessage(self):
@@ -37,12 +37,12 @@ class client:
                 if data:
                     msg = data.decode('utf-8')
                     if msg == "SHUTDOWN":
-                        print("Server is shutting down. Ending connection")
+                        print("\nReceived: Server is shutting down. Ending connection")
                         self.online = False
                         self.clientSocket.close()
                         sys.exit(0)
                     else:
-                        print(f"\nReceived: {msg} \n")
+                        print(f"\nReceived:\n{msg}\n")
             except ConnectionResetError:
                 break
             except OSError:
@@ -69,10 +69,3 @@ if __name__ == "__main__":
     receiveThread.start()
     sendThread.join()
     receiveThread.join()
-
-    # while True: 
-    #     message = input("Enter message: ")
-    #     if(message.lower == "exit" or message.lower == "quit"):
-    #         break
-    #     client.sendMessage(clientSocket, message)
-    #     client.receiveMessage(clientSocket)
