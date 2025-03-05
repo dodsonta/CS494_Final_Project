@@ -18,7 +18,7 @@ class client:
     
     def sendMessage(self):
         while self.online == True:
-            message = input("Enter command: ")
+            message = input("Enter command:\n")
             if self.online == False:
                 break
             if(message == "EXIT"):
@@ -41,6 +41,9 @@ class client:
                         self.online = False
                         self.clientSocket.close()
                         sys.exit(0)
+                    elif msg.startswith("MESSAGE") or msg.startswith("LEFT") or msg.startswith("JOINED"):
+                        msg = msg.split(" ", 1)[1]
+                        print(f"\nReceived:\n{msg}\nEnter command: ")
                     else:
                         print(f"\nReceived:\n{msg}\n")
             except ConnectionResetError:

@@ -61,13 +61,16 @@ LIST USERS <room name>: Lists users in a room of the name inputted into room nam
                     if roomName in self.rooms:
                         self.rooms[roomName].append(username)
                         self.clients[username].sendall(f'Joined room "{roomName}"'.encode('utf-8'))
+                        for user in self.rooms[roomName]:
+                            if user != username:
+                                self.clients[user].sendall(f"JOINED {username} joined room {roomName}".encode('utf-8'))
                     else:
                         self.clients[username].sendall(f"Room {roomName} does not exist".encode('utf-8'))
                 elif message.startswith("LEAVE ROOM "):
                     roomName = " ".join(message.split(" ")[2:])
                     if (roomName in self.rooms) and (username in self.rooms[roomName]):
                         self.rooms[roomName].remove(username)
-                        self.clients[username].sendall(f"Left room {roomName}".encode('utf-8'))
+                        self.clients[username].sendall(f"LEFT Left room {roomName}".encode('utf-8'))
                         for user in self.rooms[roomName]:
                             self.clients[user].sendall(f"{username} left room {roomName}".encode('utf-8'))
                     elif roomName in self.rooms:
@@ -87,7 +90,7 @@ LIST USERS <room name>: Lists users in a room of the name inputted into room nam
                         if (room in self.rooms) and (username in self.rooms[room]):
                             for user in self.rooms[room]:
                                 if user != username:
-                                    self.clients[user].sendall(f"Room: {room}, User: {username}: {message}".encode('utf-8'))
+                                    self.clients[user].sendall(f"MESSAGE Room: {room}, User: {username}: {message}".encode('utf-8'))
                         elif room in self.rooms:
                             self.clients[username].sendall(f"You are not in room {room}".encode('utf-8'))
                         else:
@@ -103,7 +106,7 @@ LIST USERS <room name>: Lists users in a room of the name inputted into room nam
                 if username in self.rooms[room]:
                     self.rooms[room].remove(username)
                     for user in self.rooms[room]:
-                        self.clients[user].sendall(f"{username} left room {room}".encode('utf-8'))
+                        self.clients[user].sendall(f"LEFT {username} left room {room}".encode('utf-8'))
             clientSocket.close()
             del self.clients[username]
             print(f"{username}  disconnected")
