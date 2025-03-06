@@ -8,8 +8,8 @@ clients = {}
 rooms = {}
 
 class Server:
-    def __init__(self, host='localhost', port=6667):
-        self.serverAddr = (host, port)
+    def __init__(self):
+        self.serverAddr = ('localhost', 6665)
         self.serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.serverSocket.settimeout(1)
         self.clients = {}
@@ -19,7 +19,7 @@ class Server:
     def startServer(self):
         self.serverSocket.bind(self.serverAddr)
         self.serverSocket.listen(5)
-        print("Server started and listening on port 6667")
+        print(f"Server started and listening on port {self.serverAddr[1]}")
         signal.signal(signal.SIGINT, self.signal_handler)
         while self.online:
             try:

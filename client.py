@@ -11,7 +11,7 @@ class client:
         self.online = True
     
     def connectToServer(self):
-        serverAddress = ('localhost', 6667)
+        serverAddress = ('localhost', 6665)
         self.clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.clientSocket.connect(serverAddress)
         self.clientSocket.sendall(f"{self.username}".encode('utf-8'))
@@ -52,7 +52,6 @@ class client:
                 break
 
 if __name__ == "__main__":
-
     if DEBUG == True:
         print("Debug mode enabled")
         username = "test"
